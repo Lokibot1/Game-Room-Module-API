@@ -15,7 +15,7 @@ class RoomController extends Controller
     {
         $validated = $request->validate([
             'game_type' => 'required|in:mafia,avalon',
-            'host_name' => 'nullable|string|max:255', 
+            'host_name' => 'nullable|string|max:255',
         ]);
 
         // Generate unique code
@@ -27,6 +27,7 @@ class RoomController extends Controller
             'code' => $code,
             'game_type' => $validated['game_type'],
             'host_name' => $validated['host_name'],
+            'last_active_at' => now(),
         ]);
 
         // Add host as first player
@@ -51,6 +52,8 @@ class RoomController extends Controller
             return response()->json(['message' => 'Room not found'], 404);
         }
 
+        $room->touchActivity();
+
         return response()->json($room);
     }
 
@@ -73,6 +76,8 @@ class RoomController extends Controller
             'is_host' => false,
         ]);
 
+        $room->touchActivity();
+
         return response()->json([
             'room' => $room,
             'room_player_id' => $player->id,
@@ -88,6 +93,50 @@ class RoomController extends Controller
             return response()->json(['message' => 'Room not found'], 404);
         }
 
+        $room->touchActivity();
+
         return response()->json($room->players);
+    }
+
+    // POST /api/rooms/{code}/leave - Leave room (auto-delete the room once everyone has left) eto na ung parang expire link ganern
+    public function leave($code, Request $request)
+    {
+        $validated = $request->validate([
+            'room_player_id' => 'required|integer',
+        ]);
+
+        $room = Room::where('code', $code)->first();
+
+        if (!$room) {
+            return response()->json(['message' => 'Room not found'], 404);
+        }
+
+        $player = RoomPlayer::where('room_id', $room->id)
+            ->where('id', $validated['room_player_id'])
+            ->first();
+
+        if ($player) {
+            $wasHost = (bool) $player->is_host;
+            $player->delete();
+
+            $remaining = $room->players()->orderBy('id')->get();
+
+            if ($remaining->isEmpty()) {
+                $room->delete();
+
+                return response()->json(['message' => 'Room closed, no players remaining']);
+            }
+
+            if ($wasHost) {
+                $newHost = $remaining->first();
+                $newHost->is_host = true;
+                $newHost->save();
+                $room->host_name = $newHost->player_name;
+            }
+        }
+
+        $room->touchActivity();
+
+        return response()->json(['message' => 'Left room']);
     }
 }
