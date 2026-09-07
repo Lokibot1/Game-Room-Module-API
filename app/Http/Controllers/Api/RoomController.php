@@ -15,7 +15,7 @@ class RoomController extends Controller
     {
         $validated = $request->validate([
             'game_type' => 'required|in:mafia,avalon',
-            'host_name' => 'nullable|string|max:255',
+            'host_name' => 'nullable|string|max:255', 
         ]);
 
         // Generate unique code
@@ -30,13 +30,16 @@ class RoomController extends Controller
         ]);
 
         // Add host as first player
-        RoomPlayer::create([
+        $player = RoomPlayer::create([
             'room_id' => $room->id,
             'player_name' => $validated['host_name'] ?? 'Host',
             'is_host' => true,
         ]);
 
-        return response()->json($room, 201);
+        return response()->json([
+            'room' => $room,
+            'room_player_id' => $player->id,
+        ], 201);
     }
 
     // GET /api/rooms/{code} - Fetch room by code
@@ -70,7 +73,10 @@ class RoomController extends Controller
             'is_host' => false,
         ]);
 
-        return response()->json($player, 201);
+        return response()->json([
+            'room' => $room,
+            'room_player_id' => $player->id,
+], 201);
     }
 
     // GET /api/rooms/{code}/players - List players in room

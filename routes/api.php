@@ -15,6 +15,5 @@ Route::post('/rooms/{code}/join', [RoomController::class, 'join']); //join room 
 Route::get('/rooms/{code}/players', [RoomController::class, 'getPlayers']); //eto para makita mo ibang tao sa lobby
 
 
-//Mafia Ingame API
 
 // Route::get('/api/custom', [RoomController::class, 'customMethod']);
