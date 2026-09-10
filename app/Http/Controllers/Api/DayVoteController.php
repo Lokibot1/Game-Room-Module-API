@@ -3,20 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\NightAction;
+use App\Models\DayVote;
 use App\Models\Room;
 use App\Models\RoomPlayer;
 use Illuminate\Http\Request;
 
-class NightActionController extends Controller
+class DayVoteController extends Controller
 {
     public function submit($code, Request $request)
     {
         $validated = $request->validate([
-            'room_player_id' => 'required|integer',
+            'voter_room_player_id' => 'required|integer',
             'round' => 'required|integer|min:1',
-            'role' => 'required|in:mafia,detective,doctor,town',
-            'target_room_player_id' => 'nullable|integer',
+            'target_room_player_id' => 'required|integer',
         ]);
 
         $room = Room::where('code', $code)->first();
@@ -24,34 +23,29 @@ class NightActionController extends Controller
             return response()->json(['message' => 'Room not found'], 404);
         }
 
-        $player = RoomPlayer::where('room_id', $room->id)
-            ->where('id', $validated['room_player_id'])
+        $voter = RoomPlayer::where('room_id', $room->id)
+            ->where('id', $validated['voter_room_player_id'])
             ->first();
-        if (!$player) {
+        if (!$voter) {
             return response()->json(['message' => 'Player not found in this room'], 404);
         }
 
-        $action = NightAction::updateOrCreate(
+        $vote = DayVote::updateOrCreate(
             [
                 'room_id' => $room->id,
                 'round' => $validated['round'],
-                'room_player_id' => $player->id,
+                'voter_room_player_id' => $voter->id,
             ],
             [
-                'role' => $validated['role'],
-                'target_room_player_id' => $validated['target_room_player_id'] ?? null,
+                'target_room_player_id' => $validated['target_room_player_id'],
             ],
         );
 
         $room->touchActivity();
 
-        return response()->json($action, 201);
+        return response()->json($vote, 201);
     }
 
-    // GET /api/rooms/{code}/night-actions - Kunin ang mga na-submit na night actions. Kapag
-    // walang ?round=, ibabalik lahat ng actions sa buong laro (ginagamit ito ng frontend para
-    // i-replay ang buong kasaysayan ng laro - see computeGameState sa Vue app - kaya hindi na
-    // kailangan mag-imbak ng "current round"/"alive players" sa database).
     public function index($code, Request $request)
     {
         $validated = $request->validate([
@@ -63,13 +57,13 @@ class NightActionController extends Controller
             return response()->json(['message' => 'Room not found'], 404);
         }
 
-        $query = NightAction::where('room_id', $room->id);
+        $query = DayVote::where('room_id', $room->id);
         if (!empty($validated['round'])) {
             $query->where('round', $validated['round']);
         }
 
-        $actions = $query->orderBy('round')->orderBy('id')->get();
+        $votes = $query->orderBy('round')->orderBy('id')->get();
 
-        return response()->json($actions);
+        return response()->json($votes);
     }
 }

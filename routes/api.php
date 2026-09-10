@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\DayVoteController;
 use App\Http\Controllers\Api\NightActionController;
 use App\Http\Controllers\Api\RoomController;
 use Illuminate\Http\Request;
@@ -19,8 +20,10 @@ Route::post('/rooms/{code}/start', [RoomController::class, 'start']); //host lan
 
 // Night Action APIs (Mafia target/Detective investigation/Doctor protection)
 Route::post('/rooms/{code}/night-actions', [NightActionController::class, 'submit']); //i-submit/i-update ang sariling action sa isang round
-Route::get('/rooms/{code}/night-actions', [NightActionController::class, 'index']); //kunin lahat ng na-submit na actions ng isang round para makapag moveon na sa next phase (?round=1)
+Route::get('/rooms/{code}/night-actions', [NightActionController::class, 'index']); //kunin lahat ng na-submit na actions (?round=1, o lahat kapag wala)
 
-
+// Day Vote APIs 
+Route::post('/rooms/{code}/day-votes', [DayVoteController::class, 'submit']); //i-submit/i-update ang sariling boto sa isang round
+Route::get('/rooms/{code}/day-votes', [DayVoteController::class, 'index']); //kunin lahat ng na-submit na boto (?round=1, o lahat kapag wala)
 
 // Route::get('/api/custom', [RoomController::class, 'customMethod']);
