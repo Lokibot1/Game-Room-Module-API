@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\PlayerListUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\DayVote;
 use App\Models\NightAction;
@@ -79,6 +80,7 @@ class RoomController extends Controller
         ]);
 
         $room->touchActivity();
+        broadcast(new PlayerListUpdated($room));
 
         return response()->json([
             'room' => $room,
@@ -196,6 +198,11 @@ class RoomController extends Controller
                 $newHost->save();
                 $room->host_name = $newHost->player_name;
             }
+
+            $room->touchActivity();
+            broadcast(new PlayerListUpdated($room));
+
+            return response()->json(['message' => 'Left room']);
         }
 
         $room->touchActivity();
