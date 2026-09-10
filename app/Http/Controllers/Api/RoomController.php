@@ -98,6 +98,34 @@ class RoomController extends Controller
         return response()->json($room->players);
     }
 
+    // POST /api/rooms/{code}/start - Host starts the game, dito lang dapat nagiging in_progress ang status
+    public function start($code, Request $request)
+    {
+        $validated = $request->validate([
+            'room_player_id' => 'required|integer',
+        ]);
+
+        $room = Room::where('code', $code)->first();
+
+        if (!$room) {
+            return response()->json(['message' => 'Room not found'], 404);
+        }
+
+        $player = RoomPlayer::where('room_id', $room->id)
+            ->where('id', $validated['room_player_id'])
+            ->first();
+
+        if (!$player || !$player->is_host) {
+            return response()->json(['message' => 'Only the host can start the game'], 403);
+        }
+
+        $room->status = 'in_progress';
+        $room->save();
+        $room->touchActivity();
+
+        return response()->json($room);
+    }
+
     // POST /api/rooms/{code}/leave - Leave room (auto-delete the room once everyone has left) eto na ung parang expire link ganern
     public function leave($code, Request $request)
     {
