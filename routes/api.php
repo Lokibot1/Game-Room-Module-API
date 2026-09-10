@@ -17,6 +17,7 @@ Route::post('/rooms/{code}/join', [RoomController::class, 'join']); //join room 
 Route::get('/rooms/{code}/players', [RoomController::class, 'getPlayers']); //eto para makita mo ibang tao sa lobby
 Route::post('/rooms/{code}/leave', [RoomController::class, 'leave']); //pag-alis sa room, nade-delete room pag wala ng natitirang player
 Route::post('/rooms/{code}/start', [RoomController::class, 'start']); //host lang pwede mag-start, dito nagiging in_progress yung status para makita ng iba na nagsimula na
+Route::post('/rooms/{code}/restart', [RoomController::class, 'restart']); //"Play Again" - host lang, binubura ang night actions/day votes at babalik sa waiting
 
 // Night Action APIs (Mafia target/Detective investigation/Doctor protection)
 Route::post('/rooms/{code}/night-actions', [NightActionController::class, 'submit']); //i-submit/i-update ang sariling action sa isang round

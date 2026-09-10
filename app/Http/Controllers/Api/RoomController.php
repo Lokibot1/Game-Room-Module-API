@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\DayVote;
+use App\Models\NightAction;
 use App\Models\Room;
 use App\Models\RoomPlayer;
 use Illuminate\Http\Request;
@@ -120,6 +122,39 @@ class RoomController extends Controller
         }
 
         $room->status = 'in_progress';
+        $room->save();
+        $room->touchActivity();
+
+        return response()->json($room);
+    }
+
+    // POST /api/rooms/{code}/restart - Host lang pwede tumawag nito ("Play Again"). Binubura
+    // ang lahat ng night actions/day votes ng dating laro at binabalik sa "waiting" ang room
+    // status, para makabalik ang lahat ng players sa lobby na parang bagong room ulit.
+    public function restart($code, Request $request)
+    {
+        $validated = $request->validate([
+            'room_player_id' => 'required|integer',
+        ]);
+
+        $room = Room::where('code', $code)->first();
+
+        if (!$room) {
+            return response()->json(['message' => 'Room not found'], 404);
+        }
+
+        $player = RoomPlayer::where('room_id', $room->id)
+            ->where('id', $validated['room_player_id'])
+            ->first();
+
+        if (!$player || !$player->is_host) {
+            return response()->json(['message' => 'Only the host can restart the game'], 403);
+        }
+
+        NightAction::where('room_id', $room->id)->delete();
+        DayVote::where('room_id', $room->id)->delete();
+
+        $room->status = 'waiting';
         $room->save();
         $room->touchActivity();
 
