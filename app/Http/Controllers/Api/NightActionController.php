@@ -48,10 +48,7 @@ class NightActionController extends Controller
         return response()->json($action, 201);
     }
 
-    // GET /api/rooms/{code}/night-actions - Kunin ang mga na-submit na night actions. Kapag
-    // walang ?round=, ibabalik lahat ng actions sa buong laro (ginagamit ito ng frontend para
-    // i-replay ang buong kasaysayan ng laro - see computeGameState sa Vue app - kaya hindi na
-    // kailangan mag-imbak ng "current round"/"alive players" sa database).
+    // GET /api/rooms/{code}/night-actions - Kunin mga na-submit na actions
     public function index($code, Request $request)
     {
         $validated = $request->validate([
