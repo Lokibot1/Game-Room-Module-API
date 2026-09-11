@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\AvalonStateUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\AvalonProposal;
 use App\Models\Room;
@@ -47,6 +48,7 @@ class AvalonProposalController extends Controller
         ]);
 
         $room->touchActivity();
+        broadcast(new AvalonStateUpdated($room, 'proposal'));
 
         return response()->json($proposal, 201);
     }

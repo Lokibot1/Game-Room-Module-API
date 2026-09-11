@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\AvalonStateUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\AvalonProposal;
 use App\Models\AvalonTeamVote;
@@ -51,6 +52,7 @@ class AvalonVoteController extends Controller
         );
 
         $room->touchActivity();
+        broadcast(new AvalonStateUpdated($room, 'vote'));
 
         return response()->json($vote, 201);
     }

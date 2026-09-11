@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\AvalonStateUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\AvalonAssassination;
 use App\Models\Room;
@@ -49,6 +50,7 @@ class AvalonAssassinationController extends Controller
         );
 
         $room->touchActivity();
+        broadcast(new AvalonStateUpdated($room, 'assassination'));
 
         return response()->json($assassination, 201);
     }

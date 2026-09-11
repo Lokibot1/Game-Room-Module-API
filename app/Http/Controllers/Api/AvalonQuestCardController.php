@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\AvalonStateUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\AvalonQuestCard;
 use App\Models\Room;
@@ -44,6 +45,7 @@ class AvalonQuestCardController extends Controller
         );
 
         $room->touchActivity();
+        broadcast(new AvalonStateUpdated($room, 'quest-card'));
 
         return response()->json($card, 201);
     }

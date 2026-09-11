@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Events\PlayerListUpdated;
 use App\Http\Controllers\Controller;
+use App\Models\AvalonAssassination;
+use App\Models\AvalonProposal;
+use App\Models\AvalonQuestCard;
 use App\Models\DayVote;
 use App\Models\NightAction;
 use App\Models\Room;
@@ -155,6 +158,9 @@ class RoomController extends Controller
 
         NightAction::where('room_id', $room->id)->delete();
         DayVote::where('room_id', $room->id)->delete();
+        AvalonProposal::where('room_id', $room->id)->delete(); // cascades to avalon_team_votes
+        AvalonQuestCard::where('room_id', $room->id)->delete();
+        AvalonAssassination::where('room_id', $room->id)->delete();
 
         $room->status = 'waiting';
         $room->save();

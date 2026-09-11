@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\Api\AvalonAssassinationController;
+use App\Http\Controllers\Api\AvalonProposalController;
+use App\Http\Controllers\Api\AvalonQuestCardController;
+use App\Http\Controllers\Api\AvalonVoteController;
 use App\Http\Controllers\Api\DayVoteController;
 use App\Http\Controllers\Api\NightActionController;
 use App\Http\Controllers\Api\RoomController;
@@ -34,9 +38,9 @@ Route::get('/rooms/{code}/avalon/proposals', [AvalonProposalController::class, '
 Route::post('/rooms/{code}/avalon/votes', [AvalonVoteController::class, 'submit']);
 Route::get('/rooms/{code}/avalon/votes', [AvalonVoteController::class, 'index']);
 Route::post('/rooms/{code}/avalon/quest-cards', [AvalonQuestCardController::class, 'submit']);
-Route::get('/rooms/{code}/avalon/quest-cads', [AvalonQuestCardController::class, 'index']);
-Route::post('/rooms/{code}/avalon/assasination', [AvalonAssasinationController::class, 'show']);
-Route::get('/rooms/{code}/avalon/assasination', [AvalonAssasinationController::class, 'show']);
+Route::get('/rooms/{code}/avalon/quest-cards', [AvalonQuestCardController::class, 'index']);
+Route::post('/rooms/{code}/avalon/assassination', [AvalonAssassinationController::class, 'submit']);
+Route::get('/rooms/{code}/avalon/assassination', [AvalonAssassinationController::class, 'show']);
 
 
 // Route::get('/api/custom', [RoomController::class, 'customMethod']);
