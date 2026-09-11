@@ -19,12 +19,24 @@ Route::post('/rooms/{code}/leave', [RoomController::class, 'leave']); //pag-alis
 Route::post('/rooms/{code}/start', [RoomController::class, 'start']); //host lang pwede mag-start, dito nagiging in_progress yung status para makita ng iba na nagsimula na
 Route::post('/rooms/{code}/restart', [RoomController::class, 'restart']); //"Play Again" - host lang, binubura ang night actions/day votes at babalik sa waiting
 
+// Mafia
 // Night Action APIs (Mafia target/Detective investigation/Doctor protection)
 Route::post('/rooms/{code}/night-actions', [NightActionController::class, 'submit']); //i-submit/i-update ang sariling action sa isang round
 Route::get('/rooms/{code}/night-actions', [NightActionController::class, 'index']); //kunin lahat ng na-submit na actions (?round=1, o lahat kapag wala)
-
 // Day Vote APIs 
 Route::post('/rooms/{code}/day-votes', [DayVoteController::class, 'submit']); //i-submit/i-update ang sariling boto sa isang round
 Route::get('/rooms/{code}/day-votes', [DayVoteController::class, 'index']); //kunin lahat ng na-submit na boto (?round=1, o lahat kapag wala)
+
+
+//AVALON APIs
+Route::post('/rooms/{code}/avalon/proposals', [AvalonProposalController::class, 'submit']);
+Route::get('/rooms/{code}/avalon/proposals', [AvalonProposalController::class, 'index']);
+Route::post('/rooms/{code}/avalon/votes', [AvalonVoteController::class, 'submit']);
+Route::get('/rooms/{code}/avalon/votes', [AvalonVoteController::class, 'index']);
+Route::post('/rooms/{code}/avalon/quest-cards', [AvalonQuestCardController::class, 'submit']);
+Route::get('/rooms/{code}/avalon/quest-cads', [AvalonQuestCardController::class, 'index']);
+Route::post('/rooms/{code}/avalon/assasination', [AvalonAssasinationController::class, 'show']);
+Route::get('/rooms/{code}/avalon/assasination', [AvalonAssasinationController::class, 'show']);
+
 
 // Route::get('/api/custom', [RoomController::class, 'customMethod']);
