@@ -14,6 +14,11 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+// para hindi mag-spin down yung render kasi inactive.
+Route::get('/ping', function () {
+    return response()->json(['status' => 'ok']);
+});
+
 // Room APIs
 Route::post('/rooms', [RoomController::class, 'store']); //create
 Route::get('/rooms/{code}', [RoomController::class, 'show']); //get room by code
