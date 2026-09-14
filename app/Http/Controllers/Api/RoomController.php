@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Events\AvalonStateUpdated;
 use App\Events\PlayerListUpdated;
 use App\Http\Controllers\Controller;
 use App\Models\AvalonAssassination;
@@ -129,6 +130,12 @@ class RoomController extends Controller
         $room->status = 'in_progress';
         $room->save();
         $room->touchActivity();
+
+        // I-push agad ang unang phase (team_building, round 1) sa mga Avalon players sa halip
+        // na hintayin nilang malaman ito sa susunod na room-status poll.
+        if (strtolower($room->game_type) === 'avalon') {
+            broadcast(new AvalonStateUpdated($room, 'game-started'));
+        }
 
         return response()->json($room);
     }
