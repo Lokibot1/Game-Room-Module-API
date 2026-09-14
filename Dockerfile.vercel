@@ -11,20 +11,25 @@ RUN install-php-extensions \
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-COPY . /app
+COPY composer.json composer.lock ./
 
 RUN composer install \
     --no-dev \
+    --no-interaction \
+    --no-progress \
+    --no-scripts \
     --optimize-autoloader \
-    --no-interaction
+    --prefer-dist
+
+COPY . /app
 
 RUN mkdir -p \
-    storage/framework/cache \
-    storage/framework/sessions \
-    storage/framework/views \
-    bootstrap/cache
-
-RUN chmod -R 775 storage bootstrap/cache
+        storage/framework/cache \
+        storage/framework/sessions \
+        storage/framework/views \
+        bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache \
+    && composer dump-autoload --no-dev --classmap-authoritative
 
 ENV SERVER_NAME=:80
 
