@@ -8,6 +8,7 @@ return [
 
     'allowed_origins' => [
         'http://localhost:5173',
+        'https://game-room-by-loki-ojt-act.vercel.app/'
     ],
 
     'allowed_origins_patterns' => [],
